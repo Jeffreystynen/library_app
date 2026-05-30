@@ -79,9 +79,9 @@ class PredictionService:
         r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0
         r_squared = max(0, min(1, r_squared))  # Clamp to [0, 1]
 
-        # Predicted pages/day is the fitted slope
-        # (pages/day is constant in linear model)
-        predicted_pages_per_day = max(0.1, slope)  # Ensure positive
+        # Predicted pages/day: use the average (more realistic than trend slope)
+        # The slope represents trend over time, not actual reading rate
+        predicted_pages_per_day = y_mean if y_mean > 0.1 else max(0.1, slope)
 
         return {
             "slope": slope,

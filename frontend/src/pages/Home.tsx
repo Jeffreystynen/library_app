@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Search } from 'lucide-react';
+import { BookOpen, Search, Calendar } from 'lucide-react';
 import { Book } from '../types';
 import { bookService } from '../services/api';
 import { BookCard } from '../components/BookCard';
+
+interface Prediction {
+  book_id: number;
+  title: string;
+  estimated_finish_date: string;
+  days_remaining: number;
+  predicted_pages_per_day: number;
+}
 
 export const Home: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -11,6 +19,7 @@ export const Home: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
 
   useEffect(() => {
     loadBooks();
@@ -19,6 +28,10 @@ export const Home: React.FC = () => {
   useEffect(() => {
     filterBooks();
   }, [books, searchQuery, statusFilter]);
+
+  useEffect(() => {
+    loadPredictions();
+  }, [books]);
 
   const loadBooks = async () => {
     try {
@@ -30,6 +43,32 @@ export const Home: React.FC = () => {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadPredictions = async () => {
+    try {
+      const readingBooks = books.filter((b) => b.status === 'reading');
+      const preds: Prediction[] = [];
+
+      for (const book of readingBooks) {
+        try {
+          const response = await bookService.getBook(book.id);
+          const predResponse = await fetch(`/api/books/${book.id}/prediction`);
+          if (predResponse.ok) {
+            const predData = await predResponse.json();
+            if (predData.data) {
+              preds.push(predData.data);
+            }
+          }
+        } catch (err) {
+          console.error(`Failed to load prediction for book ${book.id}`);
+        }
+      }
+
+      setPredictions(preds);
+    } catch (err) {
+      console.error('Failed to load predictions');
     }
   };
 
@@ -81,6 +120,39 @@ export const Home: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Currently Reading with Predictions */}
+        {predictions.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Currently Reading</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {predictions.map((pred) => (
+                <div key={pred.book_id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="bg-gradient-to-r from-blue-500 to-cyan-500 p-6 text-white">
+                    <h3 className="text-lg font-bold mb-2">{pred.title}</h3>
+                    <div className="flex items-center space-x-2 mb-3">
+                      <Calendar className="w-4 h-4" />
+                      <span className="text-sm">Estimated finish date</span>
+                    </div>
+                    <p className="text-3xl font-bold">{new Date(pred.estimated_finish_date).toLocaleDateString()}</p>
+                  </div>
+                  <div className="p-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Days remaining</p>
+                        <p className="text-2xl font-bold text-gray-900">{Math.round(pred.days_remaining)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">Pages/day</p>
+                        <p className="text-2xl font-bold text-gray-900">{pred.predicted_pages_per_day.toFixed(1)}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Search and Filter */}
         <div className="mb-8 space-y-4">
