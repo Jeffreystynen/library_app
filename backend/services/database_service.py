@@ -4,6 +4,8 @@ from repositories.book_status_repository import BookStatusRepository
 from repositories.review_repository import ReviewRepository
 from repositories.tbr_repository import TBRRepository
 from repositories.stats_repository import StatsRepository
+from repositories.reading_session_repository import ReadingSessionRepository
+from services.prediction_service import PredictionService
 from utils.validators import (
     validate_book_data,
     validate_status_update,
@@ -24,6 +26,8 @@ class DatabaseService:
         self.review_repo = ReviewRepository()
         self.tbr_repo = TBRRepository()
         self.stats_repo = StatsRepository()
+        self.session_repo = ReadingSessionRepository()
+        self.prediction_service = PredictionService()
 
     # ==================== BOOK OPERATIONS ====================
 
@@ -228,6 +232,56 @@ class DatabaseService:
     def get_top_authors(self, limit=5):
         """Get top authors by book count."""
         return self.stats_repo.get_top_authors(limit)
+
+    # ==================== PREDICTION OPERATIONS ====================
+
+    def predict_completion(self, book_id):
+        """Predict reading completion date for a book using linear regression.
+
+        Fits a linear regression model to the user's reading session history,
+        then predicts pages/day and estimated finish date.
+
+        Returns:
+            dict with prediction data (book_id, title, pages_remaining,
+            predicted_pages_per_day, days_remaining, estimated_finish_date, model)
+
+        Raises:
+            ValueError: if book not found or not currently being read
+        """
+        # Get book details
+        book = self.book_repo.find_by_id(book_id)
+        if not book:
+            raise ValueError(ErrorMessages.BOOK_NOT_FOUND)
+
+        # Get book status
+        status = self.status_repo.find_by_book_id(book_id)
+        if not status or status.get("status") != "reading":
+            raise ValueError("Book is not currently being read")
+
+        # Get reading session history for this book
+        daily_pages_book = self.session_repo.get_daily_pages(book_id=book_id)
+
+        # If fewer than 3 sessions for this book, use global reading pace
+        if not daily_pages_book or len(daily_pages_book) < 3:
+            daily_pages_global = self.session_repo.get_daily_pages(book_id=None)
+            daily_pages_to_fit = daily_pages_global if daily_pages_global else []
+        else:
+            daily_pages_to_fit = daily_pages_book
+
+        # Fit regression model
+        model = self.prediction_service.fit_linear_regression(daily_pages_to_fit)
+
+        # Build prediction with current book data
+        book_with_progress = {
+            "id": book.get("id"),
+            "title": book.get("title"),
+            "pages": book.get("pages"),
+            "pages_read": status.get("pages_read", 0),
+        }
+
+        prediction = self.prediction_service.predict_completion(book_with_progress, model)
+
+        return prediction
 
 
 # Global service instance

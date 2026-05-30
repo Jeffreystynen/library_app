@@ -141,3 +141,18 @@ def search_books():
         return jsonify({"status": "error", "message": str(e)}), 400
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@books_bp.route("/<int:book_id>/prediction", methods=["GET"])
+def predict_completion(book_id):
+    """Predict reading completion date using linear regression on reading history."""
+    try:
+        service = get_service()
+        prediction = service.predict_completion(book_id)
+
+        return jsonify({"status": "success", "data": prediction})
+
+    except ValueError as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
