@@ -23,8 +23,8 @@ def create_app(config=None):
     container = init_container()
     app.container = container
 
-    # Enable CORS
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # Enable CORS for all routes
+    CORS(app)
 
     # Register blueprints
     app.register_blueprint(books_bp)

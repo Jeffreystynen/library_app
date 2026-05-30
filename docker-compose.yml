@@ -50,7 +50,7 @@ services:
       dockerfile: Dockerfile
     container_name: library_frontend
     environment:
-      REACT_APP_API_URL: http://localhost:5000
+      REACT_APP_API_URL: http://localhost:5000/api
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     depends_on:

@@ -17,6 +17,7 @@ INSERT INTO authors (name, biography, country, website_url) VALUES
 ('Charles Dickens', 'English novelist chronicling Victorian society with vivid characters.', 'United Kingdom', NULL),
 ('Emily Dickinson', 'American poet exploring themes of mortality and identity.', 'United States', NULL),
 ('Oscar Wilde', 'Irish playwright and novelist known for witty social comedies.', 'Ireland', NULL),
+('Robert Louis Stevenson', 'Scottish novelist and poet author of adventure classics and gothic tales.', 'United Kingdom', NULL),
 ('Haruki Murakami', 'Japanese novelist blending magical realism with contemporary life.', 'Japan', NULL),
 ('Gabriel García Márquez', 'Colombian novelist master of magical realism and lyrical prose.', 'Colombia', NULL);
 
@@ -56,7 +57,7 @@ INSERT INTO books (isbn, title, author_id, publication_year, genre, description,
 
 -- ADVENTURE/DRAMA (2 books)
 ('978-0451525345', 'Robinson Crusoe', 11, 1719, ARRAY['Adventure', 'Survival', 'Classic'], 'A man survives shipwreck and builds a life on a remote island for 28 years.', 368),
-('978-0451526785', 'Treasure Island', 2, 1882, ARRAY['Adventure', 'Pirate', 'Classic'], 'A boy joins pirates searching for buried treasure on a mysterious island.', 320);
+('978-0451526785', 'Treasure Island', 14, 1882, ARRAY['Adventure', 'Pirate', 'Classic'], 'A boy joins pirates searching for buried treasure on a mysterious island.', 320);
 
 -- Book Status (mix of different reading states and ratings for 26 books)
 INSERT INTO book_status (book_id, status, date_added, date_started, date_completed, rating, is_tbr, notes, pages_read) VALUES
