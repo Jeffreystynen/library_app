@@ -1,12 +1,12 @@
 """Tests for repository pattern implementation."""
 import pytest
 from unittest.mock import Mock, patch
-from services.book_repository import BookRepository
-from services.book_status_repository import BookStatusRepository
-from services.review_repository import ReviewRepository
-from services.tbr_repository import TBRRepository
-from services.stats_repository import StatsRepository
-from services.service_container import ServiceContainer
+from repositories.book_repository import BookRepository
+from repositories.book_status_repository import BookStatusRepository
+from repositories.review_repository import ReviewRepository
+from repositories.tbr_repository import TBRRepository
+from repositories.stats_repository import StatsRepository
+from services.container import ServiceContainer
 
 
 class TestBookRepository:

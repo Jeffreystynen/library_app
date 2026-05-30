@@ -1,5 +1,5 @@
 """Repository for TBR (To-Be-Read) list data access."""
-from services.base_repository import BaseRepository
+from repositories.base_repository import BaseRepository
 
 
 class TBRRepository(BaseRepository):

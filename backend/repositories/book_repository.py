@@ -60,7 +60,7 @@ class BookRepository(BaseRepository):
             LEFT JOIN book_status bs ON b.id = bs.book_id
             WHERE LOWER(b.title) LIKE LOWER(%s)
                OR LOWER(a.name) LIKE LOWER(%s)
-               OR LOWER(ANY(b.genre)) LIKE LOWER(%s)
+               OR EXISTS (SELECT 1 FROM UNNEST(b.genre) as g WHERE LOWER(g) LIKE LOWER(%s))
             LIMIT %s
         """
 

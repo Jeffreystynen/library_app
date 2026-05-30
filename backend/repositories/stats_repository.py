@@ -1,5 +1,5 @@
 """Repository for Statistics and Analytics data access."""
-from services.base_repository import BaseRepository
+from repositories.base_repository import BaseRepository
 
 
 class StatsRepository(BaseRepository):
@@ -32,9 +32,9 @@ class StatsRepository(BaseRepository):
     def get_books_by_genre(self):
         """Get count of books by genre."""
         query = """
-            SELECT genre, COUNT(*) as count
-            FROM books b, LATERAL UNNEST(b.genre) as genre
-            GROUP BY genre
+            SELECT g as genre, COUNT(*) as count
+            FROM books b, LATERAL UNNEST(b.genre) as g
+            GROUP BY g
             ORDER BY count DESC
         """
         return self.execute_query(query, fetch_all=True)

@@ -3,6 +3,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from config import get_config
 from db import init_db
+from services import init_container
 from routes import books_bp, book_status_bp, reviews_bp, tbr_bp, stats_bp
 
 
@@ -17,6 +18,10 @@ def create_app(config=None):
 
     # Initialize database
     init_db(app)
+
+    # Initialize service container (dependency injection)
+    container = init_container()
+    app.container = container
 
     # Enable CORS
     CORS(app, resources={r"/api/*": {"origins": "*"}})

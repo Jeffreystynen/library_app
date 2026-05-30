@@ -1,5 +1,5 @@
 """Repository for Review data access."""
-from services.base_repository import BaseRepository
+from repositories.base_repository import BaseRepository
 
 
 class ReviewRepository(BaseRepository):

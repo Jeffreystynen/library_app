@@ -11,13 +11,23 @@ class Database:
     def __init__(self, config):
         """Initialize database with config."""
         self.config = config
-        self.connection_params = {
-            "host": config.DB_HOST,
-            "port": config.DB_PORT,
-            "database": config.DB_NAME,
-            "user": config.DB_USER,
-            "password": config.DB_PASSWORD,
-        }
+        # Handle both dict-like and object config
+        if isinstance(config, dict):
+            self.connection_params = {
+                "host": config.get("DB_HOST", "postgres"),
+                "port": int(config.get("DB_PORT", 5432)),
+                "database": config.get("DB_NAME", "library_db"),
+                "user": config.get("DB_USER", "postgres"),
+                "password": config.get("DB_PASSWORD", "postgres"),
+            }
+        else:
+            self.connection_params = {
+                "host": config.DB_HOST,
+                "port": config.DB_PORT,
+                "database": config.DB_NAME,
+                "user": config.DB_USER,
+                "password": config.DB_PASSWORD,
+            }
 
     def connect(self):
         """Create a new database connection."""

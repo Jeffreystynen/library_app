@@ -1,5 +1,5 @@
 """Repository for BookStatus data access."""
-from services.base_repository import BaseRepository
+from repositories.base_repository import BaseRepository
 
 
 class BookStatusRepository(BaseRepository):

@@ -91,7 +91,9 @@ def validate_book_data(data):
         if not isinstance(data["description"], str):
             errors["description"] = "description must be a string"
 
-    return errors if errors else (True, None)
+    if errors:
+        return False, str(errors)
+    return True, None
 
 
 def validate_status_update(data):
@@ -105,7 +107,9 @@ def validate_status_update(data):
     if not valid:
         errors["status"] = msg
 
-    return True if not errors else (False, errors)
+    if errors:
+        return False, str(errors)
+    return True, None
 
 
 def validate_rating_update(data):
@@ -119,7 +123,9 @@ def validate_rating_update(data):
     if not valid:
         errors["rating"] = msg
 
-    return True if not errors else (False, errors)
+    if errors:
+        return False, str(errors)
+    return True, None
 
 
 def validate_progress_update(data):
@@ -133,7 +139,9 @@ def validate_progress_update(data):
     if not valid:
         errors["pages_read"] = msg
 
-    return True if not errors else (False, errors)
+    if errors:
+        return False, str(errors)
+    return True, None
 
 
 def validate_review_data(data):
@@ -168,4 +176,6 @@ def validate_review_data(data):
         if not isinstance(data["spoiler_warning"], bool):
             errors["spoiler_warning"] = "spoiler_warning must be a boolean"
 
-    return True if not errors else (False, errors)
+    if errors:
+        return False, str(errors)
+    return True, None
